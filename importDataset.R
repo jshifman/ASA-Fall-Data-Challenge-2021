@@ -33,9 +33,8 @@ allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(Cen
                                 lahisp10 = as.numeric(lahisp10), lahisp10share = as.numeric(lahisp10share),
                                 lahunv10 = as.numeric(lahunv10), lahunv10share = as.numeric(lahunv10share),
                                 lasnap10 = as.numeric(lasnap10), lasnap10share = as.numeric(lasnap10share))
-res <- cor(select(allStatesDataFrame, -CensusTract, -State, -County), use = "complete.obs")
-corrplot(res, type = "full", order = "hclust", 
-         tl.col = "black", tl.srt = 90)
+# res <- cor(select(allStatesDataFrame, -CensusTract, -State, -County), use = "complete.obs")
+# corrplot(res, type = "full", order = "hclust", tl.col = "black", tl.srt = 90)
 
 d2 <- select(allStatesDataFrame, -CensusTract, -State, -County) %>% 
   as.matrix %>%
@@ -44,7 +43,6 @@ d2 <- select(allStatesDataFrame, -CensusTract, -State, -County) %>%
   rownames_to_column(var = 'var1') %>%
   gather(var2, value, -var1)
 d2 <- filter(d2, abs(value) > .1)
-ggplot(filter(d2, var2 == "LILATracts_1And10")) +
+ggplot(filter(d2, var2 == "HUNVFlag")) +
   geom_col(aes(x = reorder(var1, -value, sum), y = value)) +
   theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
-           
