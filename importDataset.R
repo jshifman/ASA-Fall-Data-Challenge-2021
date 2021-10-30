@@ -1,8 +1,8 @@
 library("readxl")
 library(tidyverse)
 library(corrplot)
-allStatesDataFrame <- read_xlsx("This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 3)
-californiaDataFrame <- read_xlsx("This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 8)
+allStatesDataFrame <- read_xlsx("data/This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 3)
+californiaDataFrame <- read_xlsx("data/This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 8)
 allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(CensusTract),
                                 State = as.factor(State), County = as.factor(County),
                                 MedianFamilyIncome = as.numeric(MedianFamilyIncome),
