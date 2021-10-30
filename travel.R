@@ -6,14 +6,17 @@ travel <- read_csv("data/faps_household_puf.csv")
 travel <- travel %>%
   select(rural, targetgroup, pctpovguidehh_r, anyvehicle, vehiclenum,
          caraccess, snapnowhh, adltfscat, primstoretravelmode) %>%
-  transform(rural = as.factor(rural), targetgroup = as.factor(targetgroup), anyvehicle = as.factor(anyvehicle),
+  transform(rural = as.factor(rural), anyvehicle = as.factor(anyvehicle),
             vehiclenum = as.factor(vehiclenum), caraccess = as.factor(caraccess), snapnowhh = as.factor(snapnowhh),
-            adltfscat = as.factor(adltfscat), primstoretravelmode = as.factor(primstoretravelmode))
+            adltfscat = as.factor(adltfscat))
+travel$targetgroup <- factor(travel$targetgroup, levels = c("4","1","2","3"))
+travel$primstoretravelmode[travel$primstoretravelmode > 3] <- 4
+travel$primstoretravelmode <- as.factor(travel$primstoretravelmode)
 
 allStatesDataFrame <- read_xlsx("data/This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 3)
 allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(CensusTract),
-                                State = as.factor(State), County = as.factor(County),
-                                MedianFamilyIncome = as.numeric(MedianFamilyIncome),
+                                State = as.factor(State), County = as.factor(County), LA1and10 = as.factor(LA1and10),
+                                MedianFamilyIncome = as.numeric(MedianFamilyIncome), LILATracts_1And10 = as.factor(LILATracts_1And10),
                                 LAPOP1_10 = as.numeric(LAPOP1_10), LALOWI1_10 = as.numeric(LALOWI1_10),
                                 lapop1 = as.numeric(lapop1), lapop1share = as.numeric(lapop1share),
                                 lalowi1 = as.numeric(lalowi1), lalowi1share = as.numeric(lalowi1share),
@@ -40,7 +43,16 @@ allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(Cen
                                 laomultir10 = as.numeric(laomultir10), laomultir10share = as.numeric(laomultir10share),
                                 lahisp10 = as.numeric(lahisp10), lahisp10share = as.numeric(lahisp10share),
                                 lahunv10 = as.numeric(lahunv10), lahunv10share = as.numeric(lahunv10share),
-                                lasnap10 = as.numeric(lasnap10), lasnap10share = as.numeric(lasnap10share))
+                                lasnap10 = as.numeric(lasnap10), lasnap10share = as.numeric(lasnap10share),
+                                HUNVFlag = as.factor(HUNVFlag))
 ggplot(travel) +
-  geom_bar(aes(x = targetgroup, fill = primstoretravelmode))
+  geom_bar(aes(x = targetgroup, fill = primstoretravelmode), position = "fill") +
+  labs(title = "Share of Transportation Methods", x = "", y = "% of Households Using Travel Mode", fill = "Travel Method") +
+  scale_fill_discrete(labels = c("Drive Own Car", "Use Someone Else's Car", "Someone Else Drives Me", "Walk, Bike, Public Transport, or Other")) +
+  scale_x_discrete(labels = str_wrap(c("4" = "SNAP", "1" = "Non-SNAP, Income below 100% of poverty", "2" = "Non-SNAP, Income 100-185% of poverty", "3" = "Non-SNAP, Income above 185% of poverty"), width = 10))
+
+ggplot(allStatesDataFrame) +
+  geom_point(aes(x = MedianFamilyIncome, y = lahunv1share), alpha = .2) +
+  geom_point(aes(x = MedianFamilyIncome, y = lahunv10share), alpha = .2) +
+  labs(title = "Share of Tract Population Without a Car and Far From a Supermarket", x = "Median Family Income", y = "")
 
