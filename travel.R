@@ -1,5 +1,6 @@
 # Transportation Visualizations
 library(tidyverse)
+library(readxl)
 
 travel <- read_csv("data/faps_household_puf.csv")
 travel <- travel %>%
@@ -42,3 +43,4 @@ allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(Cen
                                 lasnap10 = as.numeric(lasnap10), lasnap10share = as.numeric(lasnap10share))
 ggplot(travel) +
   geom_bar(aes(x = targetgroup, fill = primstoretravelmode))
+
