@@ -1,8 +1,8 @@
-library("readxl")
+library(readxl)
 library(tidyverse)
 library(corrplot)
-allStatesDataFrame <- read_xlsx("This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 3)
-californiaDataFrame <- read_xlsx("This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 8)
+allStatesDataFrame <- read_xlsx("data/This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 3)
+californiaDataFrame <- read_xlsx("data/This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 8)
 allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(CensusTract),
                                 State = as.factor(State), County = as.factor(County),
                                 MedianFamilyIncome = as.numeric(MedianFamilyIncome),
@@ -33,6 +33,16 @@ allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(Cen
                                 lahisp10 = as.numeric(lahisp10), lahisp10share = as.numeric(lahisp10share),
                                 lahunv10 = as.numeric(lahunv10), lahunv10share = as.numeric(lahunv10share),
                                 lasnap10 = as.numeric(lasnap10), lasnap10share = as.numeric(lasnap10share))
-res <- cor(allStatesDataFrame, use = "complete.obs")
-corrplot(res, type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45)
+# res <- cor(select(allStatesDataFrame, -CensusTract, -State, -County), use = "complete.obs")
+# corrplot(res, type = "full", order = "hclust", tl.col = "black", tl.srt = 90)
+
+d2 <- select(allStatesDataFrame, -CensusTract, -State, -County) %>% 
+  as.matrix %>%
+  cor(use = "complete.obs") %>%
+  as.data.frame %>%
+  rownames_to_column(var = 'var1') %>%
+  gather(var2, value, -var1)
+d2 <- filter(d2, abs(value) > .1)
+ggplot(filter(d2, var2 == "HUNVFlag")) +
+  geom_col(aes(x = reorder(var1, -value, sum), y = value)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
