@@ -69,3 +69,5 @@ R2(clean$pred, clean$hasLA)
 MAE(clean$pred, clean$hasLA)
 RMSE(clean$pred, clean$hasLA)
 
+#test
+
