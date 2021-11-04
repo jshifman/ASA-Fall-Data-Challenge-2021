@@ -1,0 +1,183 @@
+---
+title: "Data_challenge1"
+author: "Yafet A Mekonnen"
+date: "11/3/2021"
+output: html_document
+---
+
+```{r}
+suppressMessages(library(tidyverse))
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(usdata)
+library(geofacet)
+library(statebins)
+
+library("readxl")
+```
+
+
+
+```{r}
+allStatesDataFrame <- read_xlsx("~/Desktop/Dataset_ Food ASAFDC 2021.xlsx", 3)
+```
+
+
+
+```{r}
+# remove NULL rows 
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lawhite10 == "NULL", ]  # white
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lablack10 == "NULL", ]  # black
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$laasian10 == "NULL", ]  # asian
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lanhopi10 == "NULL", ]  # Native Hawaiian and Other Pacific Islander
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$laaian10 == "NULL", ]  # American Indian and Alaska Native
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$laomultir10 == "NULL", ] # Other/Multiple race
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lahisp10 == "NULL", ] # Hispanic or Latino 
+
+```
+
+
+```{r}
+data_summary_10 <- group_by(allStatesDataFrame , State) %>% summarise(Count = n(), 
+                 White=sum(as.integer(lawhite10)), Total_White = sum(TractWhite), 
+                 Black=sum(as.integer(lablack10)), Total_black = sum(TractBlack), 
+                 Asian =sum(as.integer(laasian10)), Total_Asian = sum(TractAsian),
+                 Native_hawaiian=sum(as.integer(lanhopi10)), Total_Native_hawaiian = sum(TractNHOPI),
+                  American_Indian =sum(as.integer(laaian10)), Total_American_Indian = sum(TractAIAN),
+                 Other_Multiple = sum(as.integer(laomultir10)), Total_Other_Multiple = sum(TractOMultir),  
+                 Hispanic = sum(as.integer(lahisp10)), Total_Hispanic = sum(TractHispanic)
+                 ,LowIncomeTracts)
+
+```
+
+
+```{r}
+data_distinct <- distinct(data_summary_10, State, .keep_all = TRUE)
+#view(data_distinct)
+```
+
+
+```{r}
+data_new <- data_distinct %>% mutate(percent_White= ((White / Total_White) * 100)) %>% 
+                                mutate(percent_Black= ((Black / Total_black) * 100))  %>%                             
+                              mutate(percent_Asian= ((Asian / Total_Asian) * 100)) %>%
+                        mutate(percent_Native_hawaiian= ((Native_hawaiian / Total_Native_hawaiian) * 100))  %>%                             mutate(percent_American_Indian= ((American_Indian / Total_American_Indian) * 100)) %>%
+                             mutate(percent_Other_Multiple= ((Other_Multiple / Total_Other_Multiple) * 100))  %>%                                mutate(percent_Hispanic= ((Hispanic / Total_Hispanic) * 100))
+#view(data_new)
+```
+
+
+
+
+```{r}
+data_new_tidy <- data_new %>% pivot_longer(c(`percent_White`,`percent_Black`, `percent_Asian`,    
+                                            `percent_Native_hawaiian`, `percent_American_Indian`,     
+                                            `percent_Other_Multiple`, `percent_Hispanic`,), 
+                                             names_to = "Race", values_to = "Percent")
+
+```
+
+
+```{r}
+#view(data_new_tidy)
+colSums(is.na(data_new_tidy)) # see any missing vaules
+
+```
+
+
+
+
+```{r}
+#drop all na 
+df_clean <- na.omit(data_new_tidy) 
+
+```
+
+
+```{r}
+colSums(is.na(df_clean)) # see any missing vaules
+
+```
+
+```{r}
+head(df_clean)
+```
+
+
+```{r}
+df_clean %>% ggplot(aes(Race, Percent, fill = Race,pos)) + geom_col() + scale_x_discrete(guide = guide_axis(n.dodge=3)) 
+
+```
+
+
+
+```{r}
+
+df_clean$Race[df_clean$Race == "percent_White"] <- "White"
+df_clean$Race[df_clean$Race == "percent_Black"] <- "Black"
+df_clean$Race[df_clean$Race == "percent_Asian"] <- "Asian"
+df_clean$Race[df_clean$Race == "percent_Native_hawaiian"] <- "Native Hawaiian"
+df_clean$Race[df_clean$Race == "percent_American_Indian"] <- "American Indian"
+df_clean$Race[df_clean$Race == "percent_Other_Multiple"] <- "Other/Multiple"
+df_clean$Race[df_clean$Race == "percent_Hispanic"] <- "Hispanic"
+
+head(df_clean, 8)
+
+```
+
+
+```{r}
+
+df_clean$State <- state2abbr(df_clean$State)
+```
+
+```{r}
+head(df_clean)
+```
+
+
+
+```{r}
+mynamestheme <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (15)))
+
+                      
+```
+
+
+```{r }
+my_us_grid <- us_state_grid1[c(-2, -8), ] # remove AZ, DE  # fina a way to remove DC & SD 
+
+plot_low10 <- ggplot(df_clean, aes(Race, Percent, fill = Race)) +
+  geom_col() +
+  coord_flip() +
+  theme_bw() + 
+  facet_geo(~ State ,grid = my_us_grid) + theme(text = element_text(size = 6)) 
+
+
+```
+
+
+```{r fig.height = 8, fig.width = 10}
+print(plot_low10 + mynamestheme + labs( title = "Percent Distribution of Race Throughout Different States For \nLow Access Tract That is 10 Miles Away From Supermarket") )
+```
+
+
+
+
+Testing the facet_geo 
+code from 
+https://cran.r-project.org/web/packages/geofacet/vignettes/geofacet.html 
+
+
+```{r}
+ggplot(state_ranks, aes(variable, rank, fill = variable)) +
+  geom_col() +
+  coord_flip() +
+  theme_bw() +
+  facet_geo(~ state)
+```
+
+
+
