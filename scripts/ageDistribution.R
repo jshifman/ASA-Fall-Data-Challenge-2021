@@ -41,17 +41,21 @@ nlaTracts <- allStatesDataFrame %>%
   filter(LA1and10 == 0) %>%
   mutate(percentKids = TractKids / Pop2010, percentSeniors = TractSeniors / Pop2010)
 
-ggplot(data = allStatesDataFrame, mapping = aes(x = factor(LA1and10), y = TractKids / Pop2010)) +
-  geom_boxplot()
-
-ggplot(data = allStatesDataFrame, mapping = aes(x = factor(LA1and10), y = TractSeniors / Pop2010)) +
-  geom_boxplot()
-
 ggplot(data = allStatesDataFrame, mapping = aes(x = TractKids / Pop2010, fill = factor(LA1and10))) +
   geom_density(alpha = 0.8)
 
 ggplot(data = allStatesDataFrame, mapping = aes(x = TractSeniors / Pop2010, fill = factor(LA1and10))) +
   geom_density(alpha = 0.8)
+
+ggplot(data = allStatesDataFrame, mapping = aes(x = factor(LA1and10), y = TractKids / Pop2010)) +
+  geom_boxplot() +
+  labs(title = "Proportion of Kids In Tracts", x = "Tract", y = "Proportion of Tract Ages 0-17") +
+  scale_x_discrete(labels = str_wrap(c("0" = "Not Low Acess", "1" = "Low Acess")))
+
+ggplot(data = allStatesDataFrame, mapping = aes(x = factor(LA1and10), y = TractSeniors / Pop2010)) +
+  geom_boxplot() + 
+  labs(title = "Proportion of Seniors In Tracts", x = "Tract", y = "Proportion of Tract Ages 65+") +
+  scale_x_discrete(labels = str_wrap(c("0" = "Not Low Acess", "1" = "Low Acess")))
 
 t.test(laTracts$percentKids, nlaTracts$percentKids, alternative = "two.sided")
 t.test(laTracts$percentSeniors, nlaTracts$percentSeniors, alternative = "two.sided")
