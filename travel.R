@@ -47,7 +47,7 @@ allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(Cen
                                 HUNVFlag = as.factor(HUNVFlag))
 ggplot(travel) +
   geom_bar(aes(x = targetgroup, fill = primstoretravelmode), position = "fill") +
-  labs(title = "Share of Transportation Methods", x = "", y = "% of Households Using Travel Mode", fill = "Travel Method") +
+  labs(title = "Share of Transportation Methods", x = "", y = "Share of Households Using Travel Mode", fill = "Travel Method") +
   scale_fill_discrete(labels = c("Drive Own Car", "Use Someone Else's Car", "Someone Else Drives Me", "Walk, Bike, Public Transport, or Other")) +
   scale_x_discrete(labels = str_wrap(c("4" = "SNAP", "1" = "Non-SNAP, Income below 100% of poverty", "2" = "Non-SNAP, Income 100-185% of poverty", "3" = "Non-SNAP, Income above 185% of poverty"), width = 10))
 
