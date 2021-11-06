@@ -43,6 +43,7 @@ d2 <- select(allStatesDataFrame, -CensusTract, -State, -County) %>%
   rownames_to_column(var = 'var1') %>%
   gather(var2, value, -var1)
 d2 <- filter(d2, abs(value) > .1)
-ggplot(filter(d2, var2 == "HUNVFlag")) +
+ggplot(filter(d2, var2 == "LA1and10")) +
   geom_col(aes(x = reorder(var1, -value, sum), y = value)) +
-  theme(axis.text.x = element_text(angle = 90, vjust = .5, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, vjust = 1.08, hjust = 1.05)) +
+  labs(title = "Correlations with Flag \"Low Access at 1 mile (Urban) or 10 miles (Rural)\"", x = "Features with Value Greater Than 0.1")
