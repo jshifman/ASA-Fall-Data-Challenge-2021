@@ -47,12 +47,22 @@ allStatesDataFrame <- transform(allStatesDataFrame, CensusTract = as.numeric(Cen
                                 HUNVFlag = as.factor(HUNVFlag))
 ggplot(travel) +
   geom_bar(aes(x = targetgroup, fill = primstoretravelmode), position = "fill") +
-  labs(title = "Share of Transportation Methods", x = "", y = "% of Households Using Travel Mode", fill = "Travel Method") +
+  labs(title = "Share of Transportation Methods", x = "", y = "Share of Households Using Travel Mode", fill = "Travel Method") +
   scale_fill_discrete(labels = c("Drive Own Car", "Use Someone Else's Car", "Someone Else Drives Me", "Walk, Bike, Public Transport, or Other")) +
   scale_x_discrete(labels = str_wrap(c("4" = "SNAP", "1" = "Non-SNAP, Income below 100% of poverty", "2" = "Non-SNAP, Income 100-185% of poverty", "3" = "Non-SNAP, Income above 185% of poverty"), width = 10))
 
+allStatesDataFrame <- allStatesDataFrame %>%
+  select(PovertyRate, lahunv1share, lahunv10share)
+poverty_factor <- cut(allStatesDataFrame$PovertyRate,
+                      breaks = c(0, 25, 50, 75, Inf),
+                      labels = c("25%", "50%", "75%", "100%"),
+                      right = FALSE)
+allStatesDataFrame <- allStatesDataFrame %>%
+  mutate(PovertyPct = poverty_factor) %>%
+  drop_na(PovertyPct)
 ggplot(allStatesDataFrame) +
-  geom_point(aes(x = MedianFamilyIncome, y = lahunv1share), alpha = .2) +
-  geom_point(aes(x = MedianFamilyIncome, y = lahunv10share), alpha = .2) +
-  labs(title = "Share of Tract Population Without a Car and Far From a Supermarket", x = "Median Family Income", y = "")
+  geom_violin(aes(x = PovertyPct, y = lahunv1share)) +
+  geom_point(aes(x = PovertyPct, y = lahunv1share)) +
+  labs(title = "Share of Tract Population Without Vehicle Access and > 1 mile from a Supermarket", x = "Census Tract Poverty Level", y = "Percent of Tract Population") +
+  scale_x_discrete(labels = str_wrap(c("25%" = "0%-25%", "50%" = "25%-50%", "75%" = "50%-75%", "100%" = "75%-100%"), width = 10))
 
