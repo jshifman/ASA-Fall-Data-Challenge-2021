@@ -66,4 +66,3 @@ ggplot(allStatesDataFrame) +
   labs(title = "Share of Tract Population Without Vehicle Access and > 1 mile from a Supermarket", x = "Census Tract Poverty Level", y = "Percent of Tract Population") +
   scale_x_discrete(labels = str_wrap(c("25%" = "0%-25%", "50%" = "25%-50%", "75%" = "50%-75%", "100%" = "75%-100%"), width = 10))
 
-
