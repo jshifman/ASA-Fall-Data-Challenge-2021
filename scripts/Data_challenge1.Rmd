@@ -155,8 +155,8 @@ plot_low10 <- ggplot(df_clean, aes(Race, Percent, fill = Race)) +
   geom_col() +
   coord_flip() +
   theme_bw() + 
-  facet_geo(~ State ,grid = "us_state_grid1") + theme(text = element_text(size = 6)) 
-
+  facet_geo(~ State ,grid = "us_state_grid1") + theme(text = element_text(size = 13)) +
+  labs( title = "Percent Distribution of Race Throughout US States For 10 Miles Away From Supermarket")
 
 ```
 
@@ -166,7 +166,7 @@ view(df_clean)
 
 
 ```{r fig.height = 8, fig.width = 10}
-print(plot_low10 + mynamestheme + labs( title = "Percent Distribution of Race Throughout Different States For Low Access Tract That is 10 Miles Away From Supermarket") ) + ggsave("ggplot_with_overlapping_axis_text_wide.png", width=12)
+print(plot_low10 + labs( title = "Percent Distribution of Race Throughout Different States For Low Access Tract That is 10 Miles Away From Supermarket") ) + ggsave("ggplot_with_overlapping_axis_text_wide.png", width=12)
 ```
 
 
