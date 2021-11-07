@@ -1,0 +1,113 @@
+---
+title: "Data_challenge2"
+author: "Yafet A Mekonnen"
+date: "11/6/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+suppressMessages(library(tidyverse))
+library(ggplot2)
+library("readxl")
+
+```
+
+
+```{r}
+suppressMessages(allStatesDataFrame <- read_xlsx("~/Desktop/Dataset_ Food ASAFDC 2021.xlsx", 3))
+
+```
+
+
+```{r}
+# 10 miles 
+# remove NULL rows 
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lawhite10 == "NULL", ]  # white
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lablack10 == "NULL", ]  # black
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$laasian10 == "NULL", ]  # asian
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lanhopi10 == "NULL", ]  # Native Hawaiian and Other Pacific Islander
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$laaian10 == "NULL", ]  # American Indian and Alaska Native
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$laomultir10 == "NULL", ] # Other/Multiple race
+allStatesDataFrame <- allStatesDataFrame[!allStatesDataFrame$lahisp10 == "NULL", ] # Hispanic or Latino 
+
+```
+
+```{r}
+# drop all na 
+allStatesDataFrame_1 <- allStatesDataFrame[!rowSums((is.na(allStatesDataFrame))),]
+```
+
+
+```{r}
+data_new_bar <- summarise(allStatesDataFrame_1, 
+                 White=sum(as.integer(lawhite10)), Total_White = sum(as.integer(TractWhite)), 
+                 Black=sum(as.integer(lablack10)), Total_black = sum(TractBlack), 
+                 Asian =sum(as.integer(laasian10)), Total_Asian = sum(TractAsian),
+                 Native_hawaiian=sum(as.integer(lanhopi10)), Total_Native_hawaiian = sum(TractNHOPI),
+                  American_Indian =sum(as.integer(laaian10)), Total_American_Indian = sum(TractAIAN),
+                 Other_Multiple = sum(as.integer(laomultir10)), Total_Other_Multiple = sum(TractOMultir),  
+                 Hispanic = sum(as.integer(lahisp10)), Total_Hispanic = sum(TractHispanic)
+                 )
+head(data_new_bar)
+
+```
+
+```{r}
+data_new_bar <- data_new_bar %>% mutate(percent_White= ((White / Total_White) * 100)) %>% 
+                                mutate(percent_Black= ((Black / Total_black) * 100))  %>%                             
+                              mutate(percent_Asian= ((Asian / Total_Asian) * 100)) %>%
+                        mutate(percent_Native_hawaiian= ((Native_hawaiian / Total_Native_hawaiian) * 100))  %>%                             mutate(percent_American_Indian= ((American_Indian / Total_American_Indian) * 100)) %>%
+                             mutate(percent_Other_Multiple= ((Other_Multiple / Total_Other_Multiple) * 100))  %>%                                mutate(percent_Hispanic= ((Hispanic / Total_Hispanic) * 100))
+```
+
+
+```{r}
+data_new_tidy_bar <- data_new_bar %>% pivot_longer(c(`percent_White`,`percent_Black`, `percent_Asian`,    
+                                            `percent_Native_hawaiian`, `percent_American_Indian`,     
+                                            `percent_Other_Multiple`, `percent_Hispanic`,), 
+                                             names_to = "Race", values_to = "Percent")
+
+```
+
+```{r}
+head(data_new_tidy_bar)
+```
+
+```{r}
+# renaming them 
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_White"] <- "White"
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_Black"] <- "Black"
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_Asian"] <- "Asian"
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_Native_hawaiian"] <- "Native Hawaiian"
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_American_Indian"] <- "American Indian"
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_Other_Multiple"] <- "Other/Multiple"
+data_new_tidy_bar$Race[data_new_tidy_bar$Race == "percent_Hispanic"] <- "Hispanic"
+
+head(data_new_tidy_bar, 8)
+
+```
+
+
+
+```{r}
+mynamestheme <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (10)))
+
+                      
+```
+
+
+
+```{r}
+plot_bar <- data_new_tidy_bar %>% ggplot(aes(Race, Percent, fill = Race,pos)) + geom_col() + scale_x_discrete(guide = guide_axis(n.dodge=2)) + ylab("Sum of Percentage for Each State") 
+
+```
+
+```{r}
+print(plot_bar + mynamestheme + labs( title = "Sum of Percentage for Each State for Various Race Groups That is 10 Miles Away From Supermarket") ) 
+#+ ggsave("ggplot_with_overlapping_axis_text_wide.png", width=8, height = 4)
+```
+
+
+
