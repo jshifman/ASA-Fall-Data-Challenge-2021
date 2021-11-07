@@ -16,7 +16,7 @@ library("readxl")
 
 
 ```{r}
-suppressMessages(allStatesDataFrame <- read_xlsx("~/Desktop/Dataset_ Food ASAFDC 2021.xlsx", 3))
+suppressMessages(allStatesDataFrame <- read_xlsx("~/ASA-Fall-Data-Challenge-2021/data/This is Statistics Fall Data Challenge 2021 Dataset_ Food Access Research Atlas Data 2019-ASAFDC 2021.xlsx", 3))
 
 ```
 
@@ -92,7 +92,7 @@ head(data_new_tidy_bar, 8)
 
 
 ```{r}
-mynamestheme <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (10)))
+mynamestheme <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (10)), legend.position = "none")
 
                       
 ```
@@ -100,13 +100,12 @@ mynamestheme <- theme(plot.title = element_text(family = "Helvetica", face = "bo
 
 
 ```{r}
-plot_bar <- data_new_tidy_bar %>% ggplot(aes(Race, Percent, fill = Race,pos)) + geom_col() + scale_x_discrete(guide = guide_axis(n.dodge=2)) + ylab("Sum of Percentage for Each State") 
+plot_bar <- data_new_tidy_bar %>% ggplot(aes(Race, Percent, fill = Race,pos)) + geom_col() #+ scale_x_discrete(guide = guide_axis(n.dodge = 2))
 
 ```
 
 ```{r}
-print(plot_bar + mynamestheme + labs( title = "Sum of Percentage for Each State for Various Race Groups That is 10 Miles Away From Supermarket") ) 
-#+ ggsave("ggplot_with_overlapping_axis_text_wide.png", width=8, height = 4)
+print(plot_bar + mynamestheme + labs( title = "Share of the US population that is 10 or more miles away from a supermarket", y = "Percentage for the Nation") + ggsave("ggplot_with_overlapping_axis_text_wide.png", width=8, height = 4))
 ```
 
 
